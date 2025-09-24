@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.nasm": "nasm",
+			"random": "cpp",
+			"iostream": "cpp",
+			"array": "cpp",
+			"vector": "cpp",
+			"initializer_list": "cpp",
+			"ostream": "cpp"
+		}
+	}
+}
