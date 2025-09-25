@@ -12,7 +12,9 @@
 			"array": "cpp",
 			"vector": "cpp",
 			"initializer_list": "cpp",
-			"ostream": "cpp"
+			"ostream": "cpp",
+			"algorithm": "cpp",
+			"string_view": "cpp"
 		}
 	}
 }
