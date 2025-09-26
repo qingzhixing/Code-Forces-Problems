@@ -14,7 +14,21 @@
 			"initializer_list": "cpp",
 			"ostream": "cpp",
 			"algorithm": "cpp",
-			"string_view": "cpp"
+			"string_view": "cpp",
+			"cstdlib": "cpp",
+			"string": "cpp",
+			"exception": "cpp",
+			"memory_resource": "cpp",
+			"cmath": "cpp",
+			"functional": "cpp",
+			"fstream": "cpp",
+			"istream": "cpp",
+			"new": "cpp",
+			"sstream": "cpp",
+			"tuple": "cpp",
+			"type_traits": "cpp",
+			"typeinfo": "cpp",
+			"utility": "cpp"
 		}
 	}
 }
