@@ -29,7 +29,9 @@
 			"type_traits": "cpp",
 			"typeinfo": "cpp",
 			"utility": "cpp",
-			"streambuf": "cpp"
+			"streambuf": "cpp",
+			"optional": "cpp",
+			"system_error": "cpp"
 		}
 	}
 }
