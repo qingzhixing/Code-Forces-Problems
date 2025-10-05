@@ -31,7 +31,10 @@
 			"utility": "cpp",
 			"streambuf": "cpp",
 			"optional": "cpp",
-			"system_error": "cpp"
+			"system_error": "cpp",
+			"xiosbase": "cpp",
+			"xlocale": "cpp",
+			"xutility": "cpp"
 		}
 	}
 }
