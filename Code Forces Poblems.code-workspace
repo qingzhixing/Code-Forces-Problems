@@ -34,7 +34,14 @@
 			"system_error": "cpp",
 			"xiosbase": "cpp",
 			"xlocale": "cpp",
-			"xutility": "cpp"
+			"xutility": "cpp",
+			"charconv": "cpp",
+			"format": "cpp",
+			"iterator": "cpp",
+			"xlocnum": "cpp",
+			"xstring": "cpp",
+			"memory": "cpp",
+			"xmemory": "cpp"
 		}
 	}
 }
