@@ -41,7 +41,23 @@
 			"xlocnum": "cpp",
 			"xstring": "cpp",
 			"memory": "cpp",
-			"xmemory": "cpp"
+			"xmemory": "cpp",
+			"locale": "cpp",
+			"stdexcept": "cpp",
+			"xlocbuf": "cpp",
+			"xlocinfo": "cpp",
+			"xlocmes": "cpp",
+			"xlocmon": "cpp",
+			"xloctime": "cpp",
+			"atomic": "cpp",
+			"bit": "cpp",
+			"compare": "cpp",
+			"concepts": "cpp",
+			"cstddef": "cpp",
+			"ctime": "cpp",
+			"xfacet": "cpp",
+			"xtr1common": "cpp",
+			"cstdio": "cpp"
 		}
 	}
 }
