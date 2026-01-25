@@ -20,7 +20,17 @@ void Solution()
 		cin >> b[i];
 	}
 
+	vector<long long> pre_sum_b(n + 10);
+	// 计算 b 的前缀和数组
+	for (auto i = 1; i <= n; i++)
+	{
+		pre_sum_b[i] = pre_sum_b[i - 1] + b[i];
+	}
+
 	long long score = 0;
+
+	// 用于记录上一个难度通过的level数，用来优化时间
+	long long last_max_level = n;
 
 	long long last_difficulty = -1, last_index = -1;
 	for (int i = 1; i <= n; i++)
@@ -41,35 +51,25 @@ void Solution()
 			continue;
 		}
 
-		// cout << "+ Current Difficulty: " << last_difficulty << endl;
-		// cout << "+ Current Index: " << last_index << endl;
-
 		// 计算当前难度下剑的个数
 		int sword_cnt = n - last_index + 1;
 
-		// cout << "+ Sword Count: " << sword_cnt << endl;
+		int max_level = 0;
 
-		int passed_level = 0;
-
-		// 尝试通关
-		while (passed_level < n && sword_cnt >= b.at(passed_level + 1))
+		for (int lvl_idx = last_max_level; lvl_idx >= 1; lvl_idx--)
 		{
-			// cout << "Passed Level: " << level + 1 << endl;
-			// cout << "Before sword count: " << sword_cnt << endl;
-			// cout << "Used sword count: " << b.at(level + 1) << endl;
-
-			sword_cnt -= b.at(passed_level + 1);
-			passed_level++;
-
-			// cout << "Last sword:" << sword_cnt << endl;
+			if (sword_cnt >= pre_sum_b[lvl_idx])
+			{
+				max_level = lvl_idx;
+				break;
+			}
 		}
-		// cout << "+ Achieved Level: " << level << endl;
 
 		score =
 			max(score,
-				passed_level * last_difficulty);
+				max_level * last_difficulty);
 
-		// cout << "+ Max Score: " << score << endl;
+		last_max_level = max_level;
 	}
 
 	cout << score << endl;
