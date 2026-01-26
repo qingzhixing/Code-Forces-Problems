@@ -4,4 +4,4 @@
 
 ## 未完成补题
 
-Codeforces Round 1076 (Div. 3): E
+Codeforces Round 1076 (Div. 3): E,D
