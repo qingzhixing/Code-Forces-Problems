@@ -2,6 +2,6 @@
 
 ![Cover](./Doc/Cover.png)
 
-## 未完成补题
+## 补题
 
-Codeforces Round 1076 (Div. 3): E
+* [X] Codeforces Round 1076 (Div. 3): E
