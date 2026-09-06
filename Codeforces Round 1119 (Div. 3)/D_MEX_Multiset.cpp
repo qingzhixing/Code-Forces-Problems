@@ -16,9 +16,10 @@ int main()
 	cin >> t;
 	while (t--)
 	{
-		memset(appear, 0, sizeof(appear));
 
 		cin >> n;
+
+		memset(appear, 0, (n+10) * sizeof(int));
 
 		unordered_map<int, int> num_map;
 		for (int i = 1; i <= n; i++)

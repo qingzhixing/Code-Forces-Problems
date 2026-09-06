@@ -15,8 +15,9 @@ int main()
 	cin >> t;
 	while (t--)
 	{
-		memset(prefix_sum, 0, sizeof(prefix_sum));
 		cin >> n;
+
+		memset(prefix_sum, 0, (n + 10) * sizeof(int));
 
 		for (int i = 1; i <= n; i++)
 		{
