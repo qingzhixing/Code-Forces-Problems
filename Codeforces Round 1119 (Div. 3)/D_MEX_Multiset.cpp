@@ -9,7 +9,6 @@ int t;
 int n;
 int a[MAX_N];
 int appear[MAX_N];
-int k;
 
 int main()
 {
@@ -19,17 +18,20 @@ int main()
 
 		cin >> n;
 
-		memset(appear, 0, (n+10) * sizeof(int));
+		memset(appear, 0, (n + 10) * sizeof(int));
 
-		unordered_map<int, int> num_map;
+		auto zero_num = 0;
 		for (int i = 1; i <= n; i++)
 		{
 			cin >> a[i];
-			num_map[a[i]]++;
-		}
-		// 判断解的情况
-		auto zero_num = num_map[0];
 
+			if (a[i] == 0)
+			{
+				zero_num++;
+			}
+		}
+
+		// 判断解的情况
 		// 所有集合 mex = 0
 		if (zero_num == 0)
 		{
@@ -49,32 +51,28 @@ int main()
 			continue;
 		}
 
-		// 构造两个集合 mex = k, 另一个 mex = 0
-		// get max k
-		for (int i = 0;; i++)
-		{
-			if (num_map[i] < 2)
-			{
-				k = i;
-				break;
-			}
-		}
+		// 构造两个集合 mex = 1, 另一个mex = 0
 
 		cout << "Yes" << endl;
+		bool zero_A = false;
 		for (int i = 1; i <= n; i++)
 		{
-			if (a[i] >= k)
+			if (a[i] == 0)
+			{
+				if (!zero_A)
+				{
+					zero_A = true;
+					cout << 'A';
+				}
+				else
+				{
+					cout << 'B';
+				}
+			}
+			else
 			{
 				cout << 'C';
-				continue;
 			}
-			if (appear[a[i]])
-			{
-				cout << 'B';
-				continue;
-			}
-			appear[a[i]] = true;
-			cout << 'A';
 		}
 		cout << endl;
 	}
