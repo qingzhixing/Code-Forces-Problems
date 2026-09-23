@@ -1,72 +1,45 @@
 #include <iostream>
+#include <set>
 using namespace std;
-
-#error TODO: Uncomplemented. Wrong Answer.
 
 const int MAX_N = 2e5 + 10;
 
-int n;
-int a[MAX_N];
-
 void Solution()
 {
+	int n;
 	cin >> n;
+
+	set<int> values;
 	for (int i = 1; i <= n; i++)
 	{
-		cin >> a[i];
+		int a;
+		cin >> a;
+		values.insert(a - i);
 	}
 
 	int result = 0;
+	// 当前段的长度
+	int current_length = 0;
+	// 上一个值
+	int last = -1;
 
-	int last_num = 0;
-	int same_cnt = 0;
-	for (int i = 1; i <= n; i++)
+	for (auto x : values)
 	{
-		if (a[i] == last_num)
+		// 当前段断开，结算上一段
+		if (last != -1 && x != (last + 1))
 		{
-			same_cnt++;
+			result = max(result, current_length);
+			current_length = 0;
 		}
-		else
-		{
-			same_cnt = 1;
-		}
-		result = max(result, same_cnt);
-		last_num = a[i];
+
+		// 将当前值加入当前段
+		current_length++;
+
+		last = x;
 	}
 
-	bool operated = true;
-	while (operated)
-	{
-
-		operated = false;
-		for (int i = 2; i <= n; i++)
-		{
-			if (a[i] - a[i - 1] >= 2)
-			{
-				operated = true;
-				a[i]--;
-				a[i - 1]++;
-				swap(a[i], a[i - 1]);
-				break;
-			}
-		}
-
-		int last_num = 0;
-		int same_cnt = 0;
-		for (int i = 1; i <= n; i++)
-		{
-			if (a[i] == last_num)
-			{
-				same_cnt++;
-			}
-			else
-			{
-				same_cnt = 1;
-			}
-			result = max(result, same_cnt);
-			last_num = a[i];
-		}
-	}
+	// 最后一段
+	result = max(result, current_length);
 
 	cout << result << endl;
 }
