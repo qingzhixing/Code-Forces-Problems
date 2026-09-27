@@ -3,87 +3,44 @@
 #include <algorithm>
 using namespace std;
 
-#error TODO: Wrong Answer
-
 const int MAX_N = 2e5 + 10;
-const int MAX_M = 2e5 + 10;
 
 int n;
+// 记录每个数字所在位置的奇偶
+bool odd_position[MAX_N];
 
 void Solution()
 {
 	cin >> n;
-	vector<int> odd, even;
 	for (int i = 1; i <= n; i++)
 	{
-		int a;
-		cin >> a;
-		if (i % 2 == 1)
+		int number;
+		cin >> number;
+		odd_position[number] = i % 2;
+	}
+
+	// 对于一个合格的序列，其任意后缀都满足
+	// 奇数坐标数量 和 偶数坐标数量 的差的绝对值 <= 1
+	// 奇数坐标数量 - 偶数坐标数量
+	int delta = 0;
+	for (int i = n; i >= 1; i--)
+	{
+		if (odd_position[i])
 		{
-			odd.push_back(a);
+			delta++;
 		}
 		else
 		{
-			even.push_back(a);
+			delta--;
 		}
-	}
 
-	if (n == 1)
-	{
-		cout << "YES" << endl;
-		return;
-	}
-
-	sort(odd.begin(), odd.end());
-	sort(even.begin(), even.end());
-
-	vector<int> after;
-
-	// 直接合并，之后校验
-	int idx = 0;
-	while (idx < odd.size())
-	{
-		if (idx >= even.size())
+		if (abs(delta) > 1)
 		{
-			after.push_back(odd[idx]);
-			idx++;
-			continue;
+			cout << "NO" << endl;
+			return;
 		}
-		after.push_back(odd[idx]);
-		after.push_back(even[idx]);
+	}
 
-		idx++;
-	}
-	for (auto num : after)
-	{
-		cout << num << ' ';
-	}
-	cout << endl;
-
-	// 判断线上升后下降
-	bool up = true;
-	int last_num = -1;
-	for (auto num : after)
-	{
-		if (num > last_num)
-		{
-			if (!up)
-			{
-				// 可换向
-				up = false;
-			}
-		}
-		else
-		// num < last_num
-		{
-			if (up)
-			{
-				cout << "NO" << endl;
-				return;
-			}
-		}
-		last_num = num;
-	}
 	cout << "YES" << endl;
 }
 
