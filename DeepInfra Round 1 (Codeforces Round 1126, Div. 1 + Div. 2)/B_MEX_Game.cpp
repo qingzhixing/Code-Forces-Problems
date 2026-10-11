@@ -3,8 +3,6 @@
 #include <map>
 using namespace std;
 
-#error TODO: Wrong Answer.
-
 const int MAX_N = 2e5 + 10;
 const int MAX_M = 2e5;
 const int INF = MAX_M + 10;
@@ -22,27 +20,21 @@ void solution()
 		counter[item]++;
 	}
 
-	int mex_a_max = INF, mex_b_max = INF;
-	for (const auto &[number, cnt] : counter)
+	int number = 0;
+	// 找到第一个 number < 2 * k
+	while ((counter.find(number) != counter.end()) && counter[number] >= 2 * k)
 	{
-		if (cnt < 2 * k - 1)
-		{
-			mex_a_max = min(mex_a_max, number);
-			mex_b_max = min(mex_b_max, number);
-			continue;
-		}
-		if (cnt < 2 * k)
-		{
-			mex_b_max = min(mex_b_max, number);
-		}
+		number++;
 	}
 
-	if (mex_a_max != mex_b_max)
+	// 这个数字限制了 B 但是无法限制 A
+	if (counter[number] == 2 * k - 1)
 	{
 		cout << "YES" << endl;
 	}
 	else
 	{
+		// A B 一起被限制了
 		cout << "NO" << endl;
 	}
 }
