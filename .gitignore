@@ -2,6 +2,7 @@
 *.o
 *.a
 *.out
+*.pdb
 
 # Rust / cargo 构建产物
 target/
