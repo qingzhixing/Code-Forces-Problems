@@ -3,6 +3,9 @@
 *.a
 *.out
 
+# Rust / cargo 构建产物
+target/
+
 **/.cph
 
 .vscode/
