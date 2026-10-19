@@ -1,0 +1,14 @@
+[package]
+# 目录名里带空格和括号，不能直接当包名，所以这里显式取一个合法名字
+# （等价于：cargo new --name round1115 "Codeforces Round 1115 (Div. 2)"）
+name = "round1115"
+version = "0.1.0"
+edition = "2021"
+default-run = "a_boss_fight"
+publish = false
+
+# src/bin/<name>.rs 每个文件自动 = 一个可执行文件 <name>
+#   cargo run --debug --bin a_boss_fight
+# 单文件同样能直接交给 rustc，或整段粘到 Codeforces 提交：
+#   rustc -O "src/bin/a_boss_fight.rs" -o a.exe
+[dependencies]
