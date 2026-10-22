@@ -8,5 +8,6 @@
 target/
 
 **/.cph
+*.txt
 
 .vscode/
