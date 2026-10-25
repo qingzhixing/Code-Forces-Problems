@@ -13,7 +13,19 @@ fn next_str<'a>(tokens: &mut SplitAsciiWhitespace<'a>) -> &'a str {
     tokens.next().unwrap()
 }
 
-fn solution(tokens: &mut SplitAsciiWhitespace) {}
+fn solution(tokens: &mut SplitAsciiWhitespace) {
+    let mut number: usize = next(tokens);
+
+    // 构造 10^d + 1
+    let mut result = 1usize;
+    while number > 0 {
+        number /= 10;
+        result *= 10;
+    }
+    result += 1;
+
+    println!("{result}");
+}
 
 fn main() {
     let mut input = String::new();
