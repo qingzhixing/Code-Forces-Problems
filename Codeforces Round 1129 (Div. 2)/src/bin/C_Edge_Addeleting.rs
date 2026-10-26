@@ -19,41 +19,41 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let m: usize = next(tokens);
 
     // 邻接表存边
-    let mut adj = vec![Vec::new(); n + 1];
-    for _ in 0..n - 1 {
+    let mut adj: Vec<Vec<usize>> = vec![Vec::new(); n + 1];
+    for _ in 0..(n - 1) {
         let u: usize = next(tokens);
         let v: usize = next(tokens);
         adj[u].push(v);
         adj[v].push(u);
     }
 
-    // 计算 n 到每一点 不经过 点1 的距离
-    let mut dist = vec![-1i64; n + 1];
-    dist[n] = 0;
-    let mut q = VecDeque::new();
-    q.push_back(n);
+    // 初始化 dist
+    // dist [i] 表示对结果有影响的点 到 n 的距离
+    let mut dist: Vec<Option<usize>> = vec![None; n + 1];
+    dist[n] = Some(0);
 
+    // BFS 求 dist
+    let mut q: VecDeque<usize> = VecDeque::from([n]);
     while let Some(current) = q.pop_front() {
         // 不扩展 1
         if current == 1 {
             continue;
         }
 
+        let current_dist = dist[current].unwrap();
         for &nxt in &adj[current] {
-            // 未初始化
-            if dist[nxt] < 0 {
-                dist[nxt] = dist[current] + 1;
+            if dist[nxt] == None {
+                dist[nxt] = Some(current_dist + 1);
                 q.push_back(nxt);
             }
         }
     }
 
-    let mut result = dist[1];
+    let mut result = dist[1].unwrap();
     for _ in 0..m {
         let v: usize = next(tokens);
-        // 距离合法
-        if dist[v] >= 0 {
-            result = result.max(1 + dist[v]);
+        if let Some(dist_v) = dist[v] {
+            result = result.max(dist_v + 1);
         }
     }
 
