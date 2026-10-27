@@ -1,4 +1,3 @@
-use std::collections::BinaryHeap;
 use std::io::{self, Read};
 use std::str::{FromStr, SplitAsciiWhitespace};
 
