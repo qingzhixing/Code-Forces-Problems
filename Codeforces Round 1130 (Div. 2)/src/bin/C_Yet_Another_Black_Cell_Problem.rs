@@ -18,28 +18,25 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let x: usize = next(tokens);
     let a: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
 
-    // 二分求 k 最小值
-    // 判断当前 k 是否合法
+    // 二分求 k
     let check = |k: usize| -> bool {
-        // 孤立标记
+        // 求孤立点数量
         let mut bad = vec![false; n];
-        // 孤立点数量
         let mut bad_cnt = 0usize;
-
-        for idx in 0..n {
-            let bad_left = (idx == 0) || a[idx - 1] + k < a[idx];
-            let bad_right = (idx == n - 1) || a[idx] + k < a[idx + 1];
-            if bad_left && bad_right {
-                bad[idx] = true;
+        for i in 0..n {
+            let left_bad = (i == 0) || a[i] - a[i - 1] > k;
+            let right_bad = (i == n - 1) || a[i + 1] - a[i] > k;
+            if left_bad && right_bad {
+                bad[i] = true;
                 bad_cnt += 1;
             }
         }
 
-        // 计算能被同时满足的点的数量
-        let mut pair = 0usize;
+        // 求能被同时满足的两个点
         let mut idx = 0;
-        while idx < n {
-            if bad[idx] && idx + 1 < n && bad[idx + 1] && a[idx + 1] - a[idx] <= 2 * k {
+        let mut pair = 0usize;
+        while idx < n - 1 {
+            if bad[idx] && bad[idx + 1] && a[idx + 1] - a[idx] <= 2 * k {
                 pair += 1;
                 idx += 2;
             } else {
@@ -47,9 +44,7 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
             }
         }
 
-        let needed = bad_cnt - pair;
-
-        needed <= x
+        bad_cnt - pair <= x
     };
 
     let mut l = 1usize;
