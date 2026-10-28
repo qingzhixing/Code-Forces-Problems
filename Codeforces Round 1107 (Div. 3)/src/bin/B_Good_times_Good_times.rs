@@ -16,7 +16,7 @@ fn next_str<'a>(tokens: &mut SplitAsciiWhitespace<'a>) -> &'a str {
 fn solution(tokens: &mut SplitAsciiWhitespace) {
     let mut number: usize = next(tokens);
 
-    // 构造 10^d + 1
+    // 构造 10 ^ d + 1
     let mut result = 1usize;
     while number > 0 {
         number /= 10;
