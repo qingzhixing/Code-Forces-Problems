@@ -17,9 +17,9 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let _n: usize = next(tokens);
     let line1 = next_str(tokens);
     let line2 = next_str(tokens);
-    let total = line1.into_iter().filter(|&ch| ch == 'f').count()
+    let cnt = line1.into_iter().filter(|&ch| ch == 'f').count()
         + line2.into_iter().filter(|&ch| ch == 'f').count();
-    println!("{}", total % 2);
+    println!("{}", cnt % 2);
 }
 
 fn main() {
