@@ -1,7 +1,6 @@
 use std::collections::BTreeSet;
 use std::io::{self, Read};
 use std::str::{FromStr, SplitAsciiWhitespace};
-use std::vec;
 
 const _MAX_N: usize = 0;
 const _MAX_M: usize = 0;
