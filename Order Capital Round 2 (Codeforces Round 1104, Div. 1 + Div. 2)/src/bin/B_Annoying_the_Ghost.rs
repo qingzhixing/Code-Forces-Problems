@@ -1,6 +1,7 @@
 use std::collections::BTreeSet;
 use std::io::{self, Read};
 use std::str::{FromStr, SplitAsciiWhitespace};
+use std::vec;
 
 const _MAX_N: usize = 0;
 const _MAX_M: usize = 0;
@@ -69,29 +70,26 @@ fn reverse_pair_count(a: &mut [usize]) -> usize {
 
 fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
-    let a: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
+    let mut a: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
     let b: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
 
-    let mut set = BTreeSet::<(usize, usize)>::new();
-    for idx in 0..n {
-        set.insert((b[idx], idx));
+    // 用 BTreeSet 维护 b
+    let mut targets = BTreeSet::<(usize, usize)>::new();
+    for i in 0..n {
+        targets.insert((b[i], i));
     }
 
-    // a[i] 变为 b[mapping[i]]
-    let mut mapping = vec![0usize; n];
+    // 贪心给每个 a[i] 分配一个最小的大于 a[i] 的 b[j]
     let mut ok = true;
-
-    // 贪心分配 a[i]
-    for idx in 0..n {
-        let key = (a[idx], 0);
-        // 给每个 a[i] 匹配最靠前的最小的 b[j]
-        if let Some(&(value, j)) = set.range(key..).next() {
-            mapping[idx] = j;
-            set.remove(&(value, j));
+    'outer: for i in 0..n {
+        let key = (a[i], 0usize);
+        if let Some(&(value, j)) = targets.range(key..).next() {
+            a[i] = b[j];
+            targets.remove(&(value, j));
         } else {
-            // 找不到说明无解
+            // 无解
             ok = false;
-            break;
+            break 'outer;
         }
     }
 
@@ -100,7 +98,7 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
         return;
     }
 
-    let result = reverse_pair_count(&mut mapping);
+    let result = reverse_pair_count(&mut a);
     println!("{result}");
 }
 
