@@ -1,4 +1,5 @@
 use std::io::{self, Read};
+use std::println;
 use std::str::{FromStr, SplitAsciiWhitespace};
 
 #[allow(dead_code)]
@@ -12,7 +13,16 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 }
 
 fn solution(tokens: &mut SplitAsciiWhitespace) {
-    compile_error!("TODO: Unimplemented.");
+    let n: usize = next(tokens);
+    let mut a: Vec<i64> = (0..n).map(|_| next(tokens)).collect();
+    a.sort_unstable();
+
+    let ops = a[n - 1] - a[0];
+    let mut cost = 0usize;
+    for i in 0..n - 1 {
+        cost += (a[i + 1] - a[i]) as usize * (i + 1).min(n - 1 - i);
+    }
+    println!("{cost} {ops}");
 }
 
 fn main() {
