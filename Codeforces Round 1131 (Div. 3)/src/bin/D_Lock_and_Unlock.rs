@@ -17,11 +17,12 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let mut a: Vec<i64> = (0..n).map(|_| next(tokens)).collect();
     a.sort_unstable();
 
-    let ops = a[n - 1] - a[0];
     let mut cost = 0usize;
     for i in 0..n - 1 {
-        cost += (a[i + 1] - a[i]) as usize * (i + 1).min(n - 1 - i);
+        cost += (i + 1).min(n - 1 - i) * (a[i + 1] - a[i]).abs() as usize;
     }
+    let ops = (a.iter().max().unwrap() - a.iter().min().unwrap()) as usize;
+
     println!("{cost} {ops}");
 }
 
