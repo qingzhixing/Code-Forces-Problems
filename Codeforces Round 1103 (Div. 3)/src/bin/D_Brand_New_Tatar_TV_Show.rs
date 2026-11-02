@@ -26,12 +26,12 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     freq.sort_unstable_by(|a, b| b.0.cmp(&a.0)); // 按值降序
 
     let mut last_num = 1e9 as i64;
-    for (num, freq) in freq {
+    for (num, cnt) in freq {
         // 当前数字与前一个之差 > k
         if last_num - num > k {
             // 当前值为当前分块内最大的数
             // 如果当前值频率为偶数，则必赢
-            if freq % 2 == 0 {
+            if cnt % 2 == 0 {
                 println!("YES");
                 return;
             }
