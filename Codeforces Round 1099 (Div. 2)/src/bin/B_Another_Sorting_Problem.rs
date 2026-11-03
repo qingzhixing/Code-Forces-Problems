@@ -15,7 +15,7 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
     let mut a: Vec<i64> = (0..n).map(|_| next(tokens)).collect();
 
-    let max_diff = a.windows(2).map(|w| w[0] - w[1]).max().unwrap().max(0);
+    let max_diff = a.windows(2).map(|w| w[0] - w[1]).max().unwrap_or(0).max(0);
     for i in 0..n {
         if i != 0 && a[i] < a[i - 1] {
             a[i] += max_diff;
