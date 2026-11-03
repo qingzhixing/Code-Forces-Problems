@@ -26,6 +26,7 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
             right_limit = right_limit.max(holes[current_idx]);
         }
 
+		// 反向限制
         let mut left_limit = 0usize;
         for limit_idx in 0..n {
             let current_idx = (empty_idx + n - limit_idx) % n;
