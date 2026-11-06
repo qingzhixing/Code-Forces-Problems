@@ -1,0 +1,53 @@
+use std::io::{self, Read};
+use std::str::{FromStr, SplitAsciiWhitespace};
+
+#[allow(dead_code)]
+fn next<T: FromStr>(tokens: &mut SplitAsciiWhitespace) -> T {
+    tokens.next().unwrap().parse().ok().unwrap()
+}
+
+#[allow(dead_code)]
+fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
+    tokens.next().unwrap().chars().collect()
+}
+
+fn solution(tokens: &mut SplitAsciiWhitespace) {
+    let n: usize = next(tokens);
+    let mut a: Vec<_> = (0..n)
+        .map(|idx: usize| next::<usize>(tokens) - idx)
+        .collect();
+    a.sort_unstable_by(|x, y| y.cmp(x));
+    a.dedup();
+
+    let mut previous = None;
+    let mut result = 0usize;
+    // 当前递减段长度
+    let mut cnt = 0usize;
+    for num in a {
+        match previous {
+            Some(prev) if prev == num + 1 => {
+                cnt += 1;
+            }
+            _ => {
+                result = result.max(cnt);
+                cnt = 1;
+            }
+        }
+        previous = Some(num);
+    }
+    // 结算最后一次
+    result = result.max(cnt);
+
+    println!("{result}");
+}
+
+fn main() {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let mut tokens = input.split_ascii_whitespace();
+
+    let t: usize = next(&mut tokens);
+    for _ in 0..t {
+        solution(&mut tokens);
+    }
+}
