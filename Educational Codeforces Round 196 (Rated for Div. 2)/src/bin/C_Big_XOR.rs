@@ -13,20 +13,18 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 
 fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
-    let d = n.ilog2() as usize;
-    let mut current_m = (1..=n).fold(0usize, |prev, value| prev ^ value);
-    let mut result = vec![false; n + 1];
-
-    // 0 - indexed 从 第 d+1 位往第 1 位枚举翻转
-    for idx in (1..=d + 1).rev() {
-        if current_m >> idx & 1 == 0 {
-            current_m ^= (1 << idx) ^ (1 << (idx - 1));
-            result[1 << (idx - 1)] = true;
+    let d = n.ilog2();
+    let mut m = (1..=n).fold(0usize, |prev, value| prev ^ value);
+    let mut doubled = vec![false; n + 1];
+    for digit in (1..=d + 1).rev() {
+        if m >> digit & 1 == 0 {
+            doubled[1 << (digit - 1)] = true;
+            m ^= (1 << (digit - 1)) ^ (1 << digit);
         }
     }
 
-    for &item in &result[1..] {
-        print!("{} ", if item { 1 } else { 0 });
+    for num in 1..=n {
+        print!("{} ", if doubled[num] { 1 } else { 0 });
     }
     println!("");
 }
