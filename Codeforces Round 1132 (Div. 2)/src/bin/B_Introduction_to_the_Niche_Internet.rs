@@ -1,5 +1,6 @@
 use std::io::{self, Read};
 use std::str::{FromStr, SplitAsciiWhitespace};
+use std::{print, println};
 
 #[allow(dead_code)]
 fn next<T: FromStr>(tokens: &mut SplitAsciiWhitespace) -> T {
@@ -17,19 +18,20 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let mut a: Vec<i64> = (0..n).map(|_| next(tokens)).collect();
     a.sort_unstable();
 
-    // 求 k 下界
+    // 判断是否无解
     let max_a = a.last().unwrap();
-    let max_cnt = a.iter().filter(|&item| item == max_a).count();
+    let max_cnt = a.iter().filter(|&num| num == max_a).count();
     if k < max_cnt {
         println!("NO");
         return;
     }
 
-    a[..(n - k)].reverse();
+    a[..n - k].reverse();
     a.rotate_left(n - k);
+
     println!("YES");
-    for item in a {
-        print!("{item} ");
+    for num in a {
+        print!("{num} ");
     }
     println!("");
 }
