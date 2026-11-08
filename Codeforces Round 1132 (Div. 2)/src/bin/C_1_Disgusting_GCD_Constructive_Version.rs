@@ -3,12 +3,10 @@ use std::str::{FromStr, SplitAsciiWhitespace};
 use std::sync::LazyLock;
 use std::vec;
 
-compile_error!("TODO: TLE");
-
 const MAX_M: usize = 6e5 as usize;
 
 // 预处理 2 ~ MAX_M 的素数
-const PRIMES: LazyLock<Vec<usize>> = LazyLock::new(|| -> Vec<_> {
+static PRIMES: LazyLock<Vec<usize>> = LazyLock::new(|| -> Vec<_> {
     let mut primes: Vec<usize> = vec![];
     let mut is_prime = vec![true; MAX_M];
     for num in 2..MAX_M {
