@@ -16,17 +16,15 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
     let a: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
-
-    let mut result = 0usize;
+    let mut current_max = 0usize;
     for num in a {
-        if result > num {
-            result += num;
+        if current_max > num {
+            current_max += num;
         } else {
-            result = num;
+            current_max = num;
         }
     }
-
-    println!("{result}");
+    println!("{current_max}");
 }
 
 fn main() {
