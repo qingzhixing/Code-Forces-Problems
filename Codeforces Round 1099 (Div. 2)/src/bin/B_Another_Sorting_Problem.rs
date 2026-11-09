@@ -15,15 +15,26 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
     let mut a: Vec<i64> = (0..n).map(|_| next(tokens)).collect();
 
-    let max_diff = a.windows(2).map(|w| w[0] - w[1]).max().unwrap_or(0).max(0);
-    for i in 0..n {
-        if i != 0 && a[i] < a[i - 1] {
-            a[i] += max_diff;
-        }
+    if n == 1 {
+        println!("YES");
+        return;
     }
 
-    for i in 0..n {
-        if i != 0 && a[i] < a[i - 1] {
+    let diff: Vec<_> = a.windows(2).map(|w| w[0] - w[1]).collect();
+    let max_diff = *diff.iter().max().unwrap();
+
+    // 数组已满足要求
+    if max_diff <= 0 {
+        println!("YES");
+        return;
+    }
+
+    for i in 1..n {
+        if a[i] < a[i - 1] {
+            a[i] += max_diff;
+        }
+        // 无法弥补
+        if a[i] < a[i - 1] {
             println!("NO");
             return;
         }
