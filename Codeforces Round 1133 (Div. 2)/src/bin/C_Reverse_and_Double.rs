@@ -14,41 +14,42 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
     let a: Vec<i64> = (0..n).map(|_| next(tokens)).collect();
-    let diff: Vec<i64> = a.windows(2).map(|w| (w[1] - w[0]).abs()).collect();
-    let max_diff = diff.iter().max().unwrap();
 
-    // 求最大值的所有坐标
-    let mut max_diff_idx: Vec<usize> = vec![];
-    diff.iter().enumerate().for_each(|(idx, x)| {
-        if x == max_diff {
-            max_diff_idx.push(idx);
-        }
-    });
-    let max_diff_idx = max_diff_idx;
+    // gaps[i] = a[i + 1] - a[i]
+    // [0..= (n - 2)]
+    let gaps: Vec<i64> = a.windows(2).map(|w| (w[1] - w[0]).abs()).collect();
 
-    // 如果当前总数 >= 3，那么我们没法改变最小 gap
-    if max_diff_idx.len() >= 3 {
-        println!("{max_diff}");
+    let max_gap = gaps.iter().max().unwrap();
+    let max_gap_idxs: Vec<usize> = gaps
+        .iter()
+        .enumerate()
+        .filter(|&(_, x)| x == max_gap)
+        .map(|(idx, _)| idx)
+        .collect();
+
+    // 若 max gaps >= 3，我们无论如何也没办法使得 max gap 缩小
+    if max_gap_idxs.len() >= 3 {
+        println!("{max_gap}");
         return;
     }
 
-    // 前后缀最大值
-    let pre_max: Vec<_> = diff
+    // max{gaps[0] ~ gaps[i]};
+    // [0..= (n - 2)]
+    let pre_max: Vec<i64> = gaps
         .iter()
-        .scan(0i64, |prev, value| {
-            if value > prev {
-                *prev = *value;
-            }
+        .scan(0i64, |prev, x| {
+            (*prev) = (*prev).max(*x);
             Some(*prev)
         })
         .collect();
-    let suf_max: Vec<_> = diff
+
+    // max{gaps[i] ~ gaps[n - 1]}
+    // [0..= (n - 2)]
+    let suf_max: Vec<i64> = gaps
         .iter()
         .rev()
-        .scan(0i64, |prev, value| {
-            if value > prev {
-                *prev = *value;
-            }
+        .scan(0i64, |prev, x| {
+            (*prev) = (*prev).max(*x);
             Some(*prev)
         })
         .collect::<Vec<_>>()
@@ -56,76 +57,68 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
         .rev()
         .collect();
 
-    // 评估区间翻转产生的最值
+    // 评估翻转 [l, r] 产生的最大 gap
     let eval = |l: usize, r: usize, inner_max: i64| -> i64 {
-        // 区间内部最大值变为两倍
+        // 内部最大值翻倍
         let mut result = inner_max * 2;
 
-        // 左侧判断
+        // 处理左侧
         if l > 0 {
+            // 左侧未被影响部分
             if l > 1 {
-                // 左侧未受影响的完整 gap 到 l-2 为止
                 result = result.max(pre_max[l - 2]);
             }
-            // 交界处产生新的最大值
-            result = result.max((a[l - 1] - a[r] * 2).abs());
+            // 端点
+            result = result.max((a[l - 1] - 2 * a[r]).abs());
         }
 
-        // 右侧判断
+        // 处理右侧
         if r < n - 1 {
+            // 右侧未被影响部分
             if r < n - 2 {
-                // 右侧未受影响的完整 gap 从 r+1 开始
                 result = result.max(suf_max[r + 1]);
             }
-            // 交界处产生新的最大值
-            result = result.max((a[r + 1] - a[l] * 2).abs());
+            // 端点
+            result = result.max((a[r + 1] - 2 * a[l]).abs());
         }
 
         result
     };
 
-    let mut result = *max_diff;
+    // 不进行任何操作
+    let mut result = pre_max[n - 2];
 
-    // 只有两个最大值的情况
-    // 操作区间确定，为 [i + 1, j]
-    if max_diff_idx.len() == 2 {
-        let i = max_diff_idx[0];
-        let j = max_diff_idx[1];
-        let l = i + 1;
-        let r = j;
-
+    // 如果 gaps 有两个，则操作点一定在 [i + 1, j]
+    if max_gap_idxs.len() == 2 {
+        let l = max_gap_idxs[0] + 1;
+        let r = max_gap_idxs[1];
         let mut inner_max = 0i64;
         for k in l..r {
-            inner_max = inner_max.max(diff[k]);
+            inner_max = inner_max.max(gaps[k]);
         }
-
         result = result.min(eval(l, r, inner_max));
     }
 
-    // 只有一个最大值，需要枚举左右侧所有操作可能性
-    if max_diff_idx.len() == 1 {
-        let i = max_diff_idx[0];
-        // 候选情况 A：右边界固定在 i，左边界 l 向左扩展
-        let mut inner_max = 0;
+    // gaps 只有一个，需要枚举左右区间，[l, i], [i + 1, r]
+    if max_gap_idxs.len() == 1 {
+        let i = max_gap_idxs[0];
+
+        let mut inner_max = 0i64;
         for l in (0..=i).rev() {
-            // 边遍历边求最大值
             if l < i {
-                inner_max = inner_max.max(diff[l]);
+                inner_max = inner_max.max(gaps[l]);
             }
             result = result.min(eval(l, i, inner_max));
         }
 
-        // 候选情况 B：左边界固定在 i + 1，右边界 r 向右扩展
-        let mut inner_max = 0;
+        let mut inner_max = 0i64;
         for r in i + 1..n {
-            // 边遍历边求最大值
             if r > i + 1 {
-                inner_max = inner_max.max(diff[r - 1]);
+                inner_max = inner_max.max(gaps[r - 1]);
             }
             result = result.min(eval(i + 1, r, inner_max));
         }
     }
-
     println!("{result}");
 }
 
