@@ -12,66 +12,16 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
     tokens.next().unwrap().chars().collect()
 }
 
-// 极简 Xorshift64 随机数生成器（替代 C++ 的 mt19937）
-struct Rng {
-    state: u64,
-}
-
-impl Rng {
-    fn new() -> Self {
-        let seed = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos() as u64;
-        Self {
-            state: if seed == 0 { 0xdeadbeef } else { seed },
-        }
-    }
-
-    fn next_u64(&mut self) -> u64 {
-        let mut x = self.state;
-        x ^= x << 13;
-        x ^= x >> 7;
-        x ^= x << 17;
-        self.state = x;
-        x
-    }
-
-    // Fisher-Yates 洗牌算法（替代 C++ 的 std::shuffle）
-    fn shuffle<T>(&mut self, slice: &mut [T]) {
-        for i in (1..slice.len()).rev() {
-            let j = (self.next_u64() as usize) % (i + 1);
-            slice.swap(i, j);
-        }
-    }
-}
-
 fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
-    let mut s = next_str(tokens);
-    let mut rng = Rng::new();
-
-    let mut result = 3e5 as usize;
-    let mut stk = Vec::with_capacity(n);
-
-    for _ in 0..100 {
-        rng.shuffle(&mut s);
-        stk.clear();
-
-        for &c in &s {
-            if let Some(&top) = stk.last() {
-                if top != c {
-                    stk.pop();
-                    continue;
-                }
-            }
-            stk.push(c);
-        }
-
-        result = result.min(stk.len());
+    let s = next_str(tokens);
+    let mut freq = vec![0usize; 26];
+    for ch in s {
+        freq[ch as usize - 'a' as usize] += 1;
     }
-
-    println!("{}", result);
+    freq.sort_unstable_by(|x, y| y.cmp(x));
+    let max_freq = *freq.first().unwrap();
+    println!("{}", (n as i64 % 2).max(2 * max_freq as i64 - n as i64));
 }
 
 fn main() {
