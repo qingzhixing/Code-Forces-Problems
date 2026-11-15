@@ -1,6 +1,5 @@
 use std::io::{self, Read};
 use std::str::{FromStr, SplitAsciiWhitespace};
-use std::time::{SystemTime, UNIX_EPOCH};
 
 #[allow(dead_code)]
 fn next<T: FromStr>(tokens: &mut SplitAsciiWhitespace) -> T {
