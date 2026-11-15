@@ -1,4 +1,6 @@
+use std::collections::{BTreeMap, BTreeSet};
 use std::io::{self, Read};
+use std::ops::AddAssign;
 use std::str::{FromStr, SplitAsciiWhitespace};
 
 #[allow(dead_code)]
@@ -13,53 +15,39 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 
 fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
-    let mut a: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
-    a.sort_unstable();
+    let a: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
+    let mut freq = BTreeMap::<usize, usize>::new();
+    for &x in &a {
+        freq.entry(x).or_insert(0).add_assign(1);
+    }
+    let max = *a.iter().max().unwrap();
+    let mut sorted = vec![max];
+    freq.entry(max).and_modify(|cnt| *cnt -= 1);
 
-    let mut result = 0usize;
-
-    // 构造 max_a 放最前，后续数字从小到大排
-    let max_a = a.pop().unwrap();
-    result += n * max_a;
-
-    let mut unique = Vec::new();
-    let mut duplicate = Vec::new();
-    let mut previous = None;
-    for &num in &a {
-        if Some(num) != previous {
-            unique.push(num);
-            previous = Some(num);
-        } else {
-            duplicate.push(num);
+    for (&x, cnt) in &mut freq {
+        if *cnt > 0 {
+            sorted.push(x);
+            *cnt -= 1;
         }
     }
 
-    // mex 最多为 n + 1
-    let mut visited = vec![false; n + 2];
-    let mut current_mex = 0usize;
-
-    let mut add_to_mex = |num: usize| {
-        if num < visited.len() {
-            visited[num] = true;
+    for (x, cnt) in freq {
+        for _ in 0..cnt {
+            sorted.push(x);
         }
-        while visited[current_mex] {
-            current_mex += 1;
-        }
-
-        result += current_mex;
-    };
-
-    // 最大值放最前面
-    add_to_mex(max_a);
-
-    // 放非重复值，实现 mex 最快增长
-    for num in unique {
-        add_to_mex(num);
     }
 
-    // 放重复值
-    for num in duplicate {
-        add_to_mex(num);
+    let mut result = max * n;
+    let mut mex = 0usize;
+    let mut visited = BTreeSet::<usize>::new();
+    for x in sorted {
+        visited.insert(x);
+        if mex == x {
+            while visited.contains(&mex) {
+                mex += 1;
+            }
+        }
+        result += mex;
     }
 
     println!("{result}");
