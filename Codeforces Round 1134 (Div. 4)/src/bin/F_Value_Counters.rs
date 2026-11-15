@@ -1,5 +1,6 @@
 use std::io::{self, Read};
 use std::str::{FromStr, SplitAsciiWhitespace};
+use std::{println, vec};
 
 #[allow(dead_code)]
 fn next<T: FromStr>(tokens: &mut SplitAsciiWhitespace) -> T {
@@ -13,32 +14,25 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 
 fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
-    // bx 表示值为 x 的数字操作被加减的结果
     let b: Vec<i64> = (0..n).map(|_| next(tokens)).collect();
-
-    // pos[i] 表示原数组 i 下标上的元素
-    let mut pos = vec![None::<usize>; n + 1];
-    for (x, val) in b.into_iter().enumerate() {
-        // 1 - indexed
-        let x = x + 1;
-        let idx = val - x as i64 + n as i64 + 1;
-        if idx < 1 || idx > n as i64 {
-            // 下标不合法
+    let mut p = vec![None::<usize>; n];
+    for x in 1..=n {
+        // 0 - indexed
+        let pos = b[x - 1] - x as i64 + 1 + n as i64 - 1;
+        if pos < 0 || pos > n as i64 - 1 {
             println!("-1");
             return;
         }
-        let idx = idx as usize;
-        if let Some(_) = pos[idx] {
-            // 重复
+        let pos = pos as usize;
+        if p[pos] == None {
+            p[pos] = Some(x);
+        } else {
             println!("-1");
             return;
-        } else {
-            pos[idx] = Some(x);
         }
     }
-
-    for i in 1..=n {
-        let x = pos[i].unwrap();
+    for x in p {
+        let x = x.unwrap();
         print!("{x} ");
     }
     println!("");
