@@ -1,4 +1,5 @@
 use std::io::{self, Read};
+use std::println;
 use std::str::{FromStr, SplitAsciiWhitespace};
 
 #[allow(dead_code)]
@@ -13,32 +14,33 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 
 fn solution(tokens: &mut SplitAsciiWhitespace) {
     let s = next_str(tokens);
-    let len = s.len();
-    let total_odds = s
-        .iter()
-        .filter(|&&ch| (ch as usize - '0' as usize) % 2 == 1)
-        .count();
-    let mut left_2 = 0usize;
-    let mut right_odd = total_odds;
+    let n = s.len();
 
-    // 从前往后遍历分段点，更新能保留的最多字符数
-    // 分段点前侧仅保留 2，分段点后仅保留奇数
-    let mut max_reserved = total_odds;
-    for ch in s {
-        let num = ch as usize - '0' as usize;
-        if num == 4 {
-            continue;
-        }
-        if num == 2 {
-            left_2 += 1;
-        } else {
-            right_odd -= 1;
-        }
+    // 答案上界
+    let mut result = n;
 
-        max_reserved = max_reserved.max(left_2 + right_odd);
+    let cnt4 = s.iter().filter(|&&ch| ch == '4').count();
+    let cnt2 = s.iter().filter(|&&ch| ch == '2').count();
+
+    // 删除 4
+    let s: Vec<char> = s.into_iter().filter(|&ch| ch != '4').collect();
+
+    // 从左到右枚举删除线，删除线左侧的 1/3 全被删除，右侧的 2 全被删除
+    // 前缀 2 统计
+    let mut pre2 = 0usize;
+    for (idx, ch) in s.into_iter().enumerate() {
+        let ch = ch as usize - '0' as usize;
+        let deleted_13 = idx - pre2;
+        let deleted_2 = cnt2 - pre2;
+        result = result.min(cnt4 + deleted_13 + deleted_2);
+        if ch == 2 {
+            pre2 += 1;
+        }
     }
 
-    let result = len - max_reserved;
+    // 全 2
+    result = result.min(n - cnt2);
+
     println!("{result}");
 }
 
