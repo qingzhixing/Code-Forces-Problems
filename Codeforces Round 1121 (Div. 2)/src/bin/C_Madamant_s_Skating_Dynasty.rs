@@ -13,46 +13,40 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 
 const MOD: usize = 998244353usize;
 
+fn quick_power(mut base: usize, mut power: usize) -> usize {
+    let mut result = 1usize;
+    base %= MOD;
+    while power > 0 {
+        if power & 1 == 1 {
+            result = result * base % MOD;
+        }
+        power >>= 1;
+        base = base * base % MOD;
+    }
+    result
+}
+
 fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
     let mut a: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
-
-    if n == 1 {
-        println!("0");
-        return;
-    }
-
     a.sort_unstable();
     a.iter_mut().for_each(|x| *x %= MOD);
 
-    // 需要选择父节点的点的数量
-    let m = n - 1;
-
-    // 预处理出前缀后缀阶乘
-    // fact_prefix[i] = i!
-    let mut fact_prefix = vec![1usize; m + 1];
-    for i in 1..=m {
-        fact_prefix[i] = (fact_prefix[i - 1] * i) % MOD;
+    // (n-1)!
+    let factorial = (1..n).fold(1usize, |prev, val| prev * val % MOD);
+    // suf_sum[i] = a[i+1]+..+a[n-1]
+    let mut suf_sum = vec![0; n];
+    for i in (0..n - 1).rev() {
+        suf_sum[i] = (suf_sum[i + 1] + a[i + 1]) % MOD;
     }
-    let fact_prefix = fact_prefix;
-
-    // fact_suffix[i] = (m - i)(m - i + 1)...(m)
-    let mut fact_suffix = vec![1usize; m + 2];
-    for i in (1..=m).rev() {
-        fact_suffix[i] = (fact_suffix[i + 1] * i) % MOD;
-    }
-    let fact_suffix = fact_suffix;
 
     let mut result = 0usize;
-    let mut suffix_sum = a[n - 1];
-    // 从后往前枚举节点
-    for i in (0..m).rev() {
-        // i 节点可选父亲数量
-        let k = m - i;
-        let choice = (fact_suffix[k + 1] * fact_prefix[k - 1]) % MOD;
-        result =
-            (result + (choice * (suffix_sum + MOD - ((a[i] * k) % MOD) % MOD) % MOD) % MOD) % MOD;
-        suffix_sum = (suffix_sum + a[i]) % MOD;
+    // 枚举除去 root 的节点
+    for i in 0..n - 1 {
+        // 计算 (n-1)!/(n-1-i) 使用模逆元求解
+        let choice = factorial * quick_power(n - 1 - i, MOD - 2) % MOD;
+        result += choice * (suf_sum[i] + MOD - a[i] * (n - 1 - i) % MOD) % MOD;
+        result %= MOD;
     }
 
     println!("{result}");
