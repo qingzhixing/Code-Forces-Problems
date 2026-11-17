@@ -31,15 +31,13 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let mut a: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
     a.sort_unstable_by(|x, y| y.cmp(x));
     let a = a;
-
-    // 不 op 将产生一个答案
     let mut result = 1usize;
     for i in 0..n {
-        // 重复的数字会被锁死
-        if i < n - 1 && a[i] == a[i + 1] {
+        if i + 1 < n && a[i] == a[i + 1] {
             break;
         }
-        result = (result + quick_power(a[i] - 1, i + 1)) % MOD;
+        result += quick_power(a[i] - 1, i + 1);
+        result %= MOD;
     }
 
     println!("{result}");
