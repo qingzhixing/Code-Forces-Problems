@@ -15,67 +15,51 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let _n: usize = next(tokens);
     let x: usize = next(tokens);
     let s: usize = next(tokens);
-    let str = next_str(tokens);
-    let a_cnt = str.iter().filter(|&&ch| ch == 'A').count();
+    let kids = next_str(tokens);
 
-    // 当前 k 个 A 当队头的时候
-    let simulate = |k: usize| -> usize {
-        // 队列维护空桌
-        let mut empty_desk_cnt = x;
-        let mut available_seats = 0usize;
-        let mut seated = 0usize;
-        let mut a_cnt = 0usize;
-        for &ch in &str {
-            let ch = if ch == 'A' {
-                a_cnt += 1;
-                // 前 k 个 A 视为 I，后面的视为 E
-                if a_cnt <= k { 'I' } else { 'E' }
+    let cnt_a = kids.iter().filter(|&&ch| ch == 'A').count();
+
+    // 计算 前 k 个 A 当做 I, 后 cnt_a - k 个 A 当做 E 的情况下的容纳量
+    let get_capacity = |k: usize| -> usize {
+        let mut result = 0usize;
+        let mut available_table = x;
+        let mut available_seat = 0usize;
+        let mut cnt_a = 0usize;
+        for &kid in &kids {
+            let kid = if kid == 'A' {
+                cnt_a += 1;
+                if cnt_a <= k { 'I' } else { 'E' }
             } else {
-                ch
+                kid
             };
-
-            match ch {
-                'I' => {
-                    // 有新桌就开辟
-                    if empty_desk_cnt > 0 {
-                        empty_desk_cnt -= 1;
-                        available_seats += s - 1;
-                        seated += 1;
-                    }
-                    // 否则跳过
+            if kid == 'I' {
+                if available_table > 0 {
+                    available_table -= 1;
+                    available_seat += s - 1;
+                    result += 1;
                 }
-                'E' => {
-                    // 放在非空桌子，否则跳过
-                    if available_seats > 0 {
-                        seated += 1;
-                        available_seats -= 1;
-                    }
-                }
-                p => {
-                    panic!("Invalid Peronality: {p}.");
+            } else {
+                if available_seat > 0 {
+                    available_seat -= 1;
+                    result += 1;
                 }
             }
         }
-        seated
+        result
     };
 
-    // 二分搜索最合适的 k
     let mut l = 0usize;
-    let mut r = a_cnt;
+    let mut r = cnt_a;
     while l < r {
         let mid = (l + r) >> 1;
-        let f_mid = simulate(mid);
-        let f_mid_plus_1 = simulate(mid + 1);
-        if f_mid < f_mid_plus_1 {
-            // 未到最优值
+        if get_capacity(mid) < get_capacity(mid + 1) {
             l = mid + 1;
         } else {
-            // 已经开始下坡，或者平坡
             r = mid;
         }
     }
 
-    println!("{}", simulate(l));
+    println!("{}", get_capacity(l));
 }
 
 fn main() {
