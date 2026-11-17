@@ -1,64 +1,56 @@
-use std::cmp::min;
-use std::io::{self, Read, Write};
+use std::io::{self, Read};
 use std::str::{FromStr, SplitAsciiWhitespace};
 
-const _MAX_N: usize = 1e6 as usize;
-const _MAX_M: usize = 1e9 as usize;
-
+#[allow(dead_code)]
 fn next<T: FromStr>(tokens: &mut SplitAsciiWhitespace) -> T {
     tokens.next().unwrap().parse().ok().unwrap()
 }
 
-fn solution(tokens: &mut SplitAsciiWhitespace, out: &mut impl Write) {
+#[allow(dead_code)]
+fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
+    tokens.next().unwrap().chars().collect()
+}
+
+fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
     let m: usize = next(tokens);
-
-    let v: Vec<i32> = (0..n).map(|_| next(tokens)).collect();
-    let a: Vec<Vec<i32>> = (0..n)
+    let v: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
+    let a: Vec<Vec<usize>> = (0..n)
         .map(|_| (0..m).map(|_| next(tokens)).collect())
         .collect();
 
     // 答案上界
     let mut result = m;
-
-    // 维护前 m 大的项
-    let mut best: Vec<i32> = Vec::with_capacity(2 * m);
-
-    for row in (0..n).rev() {
-        // 已到达理论最优
-        if result == 1 {
-            break;
-        }
-
-        // 将当前行的数字加入候补
-        for col in 0..m {
-            best.push(a[row][col]);
-        }
-
-        best.sort_unstable_by(|a, b| b.cmp(a));
+    // 从下到上枚举每一行，维护全局前 m 大值
+    let mut best = vec![];
+    for i in (0..n).rev() {
+        // 将当前行纳入考虑
+        best.extend_from_slice(&a[i]);
+        best.sort_unstable_by(|x, y| y.cmp(x));
         best.truncate(m);
-
-        let mut sum = 0;
-        for (idx, &val) in best.iter().enumerate() {
-            sum += val;
-            if sum >= v[row] {
-                result = min(result, idx + 1);
+        // 统计当前行答案
+        let mut cnt = 0usize;
+        let mut sum = 0usize;
+        for best_idx in 0..m {
+            sum += best[best_idx];
+            cnt += 1;
+            if sum >= v[i] {
+                result = result.min(cnt);
                 break;
             }
         }
     }
 
-    writeln!(out, "{result}").unwrap();
+    println!("{result}");
 }
 
 fn main() {
     let mut input = String::new();
     io::stdin().read_to_string(&mut input).unwrap();
     let mut tokens = input.split_ascii_whitespace();
-    let mut out = io::BufWriter::new(io::stdout().lock());
 
     let t: usize = next(&mut tokens);
     for _ in 0..t {
-        solution(&mut tokens, &mut out);
+        solution(&mut tokens);
     }
 }
