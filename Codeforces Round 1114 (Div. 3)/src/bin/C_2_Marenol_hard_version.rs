@@ -1,55 +1,91 @@
-use std::io::{self, Read, Write};
+use std::io::{self, Read};
 use std::str::{FromStr, SplitAsciiWhitespace};
 
-const _MAX_N: usize = 2e5 as usize + 10;
-
+#[allow(dead_code)]
 fn next<T: FromStr>(tokens: &mut SplitAsciiWhitespace) -> T {
     tokens.next().unwrap().parse().ok().unwrap()
 }
 
-fn solution(tokens: &mut SplitAsciiWhitespace, out: &mut impl Write) {
+#[allow(dead_code)]
+fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
+    tokens.next().unwrap().chars().collect()
+}
+
+fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
-    let a: Vec<char> = tokens.next().unwrap().chars().collect();
-    let b: Vec<char> = tokens.next().unwrap().chars().collect();
-
-    let mut result = 0i64;
-
-    // 奇偶单独考虑
-    for start in 0..2 {
-        let mut a_pos: Vec<i64> = vec![];
-        let mut b_pos: Vec<i64> = vec![];
-
-        for idx in (start..n).step_by(2) {
-            if a[idx] == '1' {
-                a_pos.push(idx as i64);
-            }
-            if b[idx] == '1' {
-                b_pos.push(idx as i64);
+    let a = next_str(tokens);
+    let b = next_str(tokens);
+    let mut a_odd_1 = 0usize;
+    let mut a_even_1 = 0usize;
+    for (i, &ch) in a.iter().enumerate() {
+        if ch == '1' {
+            if i % 2 == 0 {
+                a_even_1 += 1;
+            } else {
+                a_odd_1 += 1;
             }
         }
-
-        if a_pos.len() != b_pos.len() {
-            writeln!(out, "-1").unwrap();
-            return;
-        }
-
-        for idx in 0..a_pos.len() {
-            // 一次能走 2 格
-            result += (a_pos[idx] - b_pos[idx]).abs() / 2;
+    }
+    let mut b_odd_1 = 0usize;
+    let mut b_even_1 = 0usize;
+    for (i, &ch) in b.iter().enumerate() {
+        if ch == '1' {
+            if i % 2 == 0 {
+                b_even_1 += 1;
+            } else {
+                b_odd_1 += 1;
+            }
         }
     }
 
-    writeln!(out, "{result}").unwrap();
+    if a_odd_1 != b_odd_1 || a_even_1 != b_even_1 {
+        println!("-1");
+        return;
+    }
+
+    let a_odds: Vec<_> = a
+        .iter()
+        .enumerate()
+        .filter(|&(i, &ch)| i % 2 == 1 && ch == '1')
+        .map(|(i, _)| i)
+        .collect();
+    let a_evens: Vec<_> = a
+        .iter()
+        .enumerate()
+        .filter(|&(i, &ch)| i % 2 == 0 && ch == '1')
+        .map(|(i, _)| i)
+        .collect();
+    let b_odds: Vec<_> = b
+        .iter()
+        .enumerate()
+        .filter(|&(i, &ch)| i % 2 == 1 && ch == '1')
+        .map(|(i, _)| i)
+        .collect();
+    let b_evens: Vec<_> = b
+        .iter()
+        .enumerate()
+        .filter(|&(i, &ch)| i % 2 == 0 && ch == '1')
+        .map(|(i, _)| i)
+        .collect();
+
+    let mut result = 0usize;
+    for i in 0..a_odds.len() {
+        result += ((a_odds[i] as i64 - b_odds[i] as i64).abs() as usize) / 2;
+    }
+    for i in 0..a_evens.len() {
+        result += ((a_evens[i] as i64 - b_evens[i] as i64).abs() as usize) / 2;
+    }
+
+    println!("{result}");
 }
 
 fn main() {
     let mut input = String::new();
     io::stdin().read_to_string(&mut input).unwrap();
     let mut tokens = input.split_ascii_whitespace();
-    let mut out = io::BufWriter::new(io::stdout().lock());
 
     let t: usize = next(&mut tokens);
     for _ in 0..t {
-        solution(&mut tokens, &mut out);
+        solution(&mut tokens);
     }
 }
