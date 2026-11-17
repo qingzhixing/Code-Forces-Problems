@@ -12,7 +12,33 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 }
 
 fn solution(tokens: &mut SplitAsciiWhitespace) {
-    compile_error!("TODO: Uncomplete.");
+    let n: usize = next(tokens);
+    let n = n * 2;
+    let _k: usize = next(tokens);
+    let s = next_str(tokens);
+    let mut odd_out = 0usize;
+    let mut even_out = 0usize;
+    for (i, &ch) in s.iter().enumerate() {
+        if ch == '0' {
+            continue;
+        }
+        // 给不了后面的
+        if s[(i + 1) % n] == '1' {
+            if i % 2 == 0 {
+                even_out += 1;
+            } else {
+                odd_out += 1;
+            }
+        } else {
+            if i % 2 == 0 {
+                odd_out += 1;
+            } else {
+                even_out += 1;
+            }
+        }
+    }
+
+    println!("{odd_out} {even_out}");
 }
 
 fn main() {
