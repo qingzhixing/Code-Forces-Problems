@@ -17,7 +17,6 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let mut a: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
     let mut b: Vec<usize> = (0..m).map(|_| next(tokens)).collect();
 
-    // n 下界
     if n < 2 * m {
         println!("NO");
         return;
@@ -32,7 +31,6 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
             return;
         }
     }
-
     println!("YES");
 }
 
