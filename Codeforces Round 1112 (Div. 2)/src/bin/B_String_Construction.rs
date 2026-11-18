@@ -26,7 +26,7 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     last += k / 2;
     second_last += k - k / 2;
     for i in 0..segment {
-        let ch = String::from(((i % 2) as u8 + '0' as u8) as char);
+        let ch = ["0", "1"][i & 1];
         print!("{ch}");
         if i == segment - 2 {
             print!("{}", ch.repeat(second_last - 1));
