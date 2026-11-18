@@ -1,57 +1,48 @@
-use std::cmp::max;
-use std::io::{self, Read, Write};
+use std::io::{self, Read};
 use std::str::{FromStr, SplitAsciiWhitespace};
 
-const _MAX_N: usize = 0;
-const _MAX_M: usize = 0;
-
+#[allow(dead_code)]
 fn next<T: FromStr>(tokens: &mut SplitAsciiWhitespace) -> T {
     tokens.next().unwrap().parse().ok().unwrap()
 }
 
 #[allow(dead_code)]
-fn next_str<'a>(tokens: &mut SplitAsciiWhitespace<'a>) -> &'a str {
-    tokens.next().unwrap()
+fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
+    tokens.next().unwrap().chars().collect()
 }
 
-fn solution(tokens: &mut SplitAsciiWhitespace, out: &mut impl Write) {
+fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
-    let a: Vec<i64> = std::iter::once(0i64)
-        .chain((0..2 * n).map(|_| next(tokens)))
-        .collect();
+    let mut a: Vec<_> = vec![0usize];
 
-    // 前缀 1 ~ i 的最大得分
-    let mut dp = vec![0i64; 2 * n + 1];
-    // 数字 i 第一次出现的位置
-    let mut first_idx = vec![-1isize; n + 1];
+    // 1 - indexed 方便 dp
+    a.extend((0..2 * n).map(|_| next::<usize>(tokens)));
 
-    for idx in 1..=2 * n {
-        // 自成一个区间
-        dp[idx] = max(dp[idx], dp[idx - 1] + 1);
-        let l = &mut first_idx[a[idx] as usize];
-        if *l != -1 {
-            let l = first_idx[a[idx] as usize] as usize;
-            dp[idx] = max(
-                dp[idx],
-                dp[(l - 1) as usize] + ((idx - l + 1) * (idx - l + 1)) as i64,
-            );
+    // 处理到当前点的最大得分
+    let mut dp = vec![0usize; 2 * n + 1];
+    // 当前数字前一个出现的位置
+    let mut prev = vec![None::<usize>; n + 1];
+    for i in 1..=2 * n {
+        // 单独为 1 点匹配
+        dp[i] = dp[i - 1] + 1;
+        if let Some(prev_pos) = prev[a[i]] {
+            let size: usize = i - prev_pos + 1;
+            dp[i] = dp[i].max(dp[prev_pos - 1] + size * size);
         } else {
-            *l = idx as isize;
+            prev[a[i]] = Some(i);
         }
     }
 
-    writeln!(out, "{}", dp[2 * n]).unwrap();
+    println!("{}", dp[2 * n]);
 }
 
 fn main() {
     let mut input = String::new();
     io::stdin().read_to_string(&mut input).unwrap();
     let mut tokens = input.split_ascii_whitespace();
-    let mut out = io::BufWriter::new(io::stdout().lock());
 
     let t: usize = next(&mut tokens);
     for _ in 0..t {
-        solution(&mut tokens, &mut out);
+        solution(&mut tokens);
     }
-    out.flush().unwrap();
 }
