@@ -21,23 +21,12 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
         return;
     }
 
-    let mut last = 1usize;
-    let mut second_last = 1usize;
-    last += k / 2;
-    second_last += k - k / 2;
-    for i in 0..segment {
-        let ch = ["0", "1"][i & 1];
-        print!("{ch}");
-        if i == segment - 2 {
-            print!("{}", ch.repeat(second_last - 1));
-            continue;
-        }
-        if i == segment - 1 {
-            print!("{}", ch.repeat(last - 1));
-            continue;
-        }
-    }
-    println!("");
+    let chars = ["0", "1"];
+    let prefix: String = chars.iter().copied().cycle().take(segment - 2).collect();
+    let second_last = chars[(segment - 2) & 1].repeat(1 + k - k / 2);
+    let last = chars[(segment - 1) & 1].repeat(1 + k / 2);
+
+    println!("{prefix}{second_last}{last}");
 }
 
 fn main() {
