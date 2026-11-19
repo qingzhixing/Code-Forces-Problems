@@ -1,76 +1,58 @@
-use std::io::{self, Read, Write};
+use std::io::{self, Read};
 use std::str::{FromStr, SplitAsciiWhitespace};
 
-const _MAX_N: usize = 0;
-const _MAX_M: usize = 0;
-
+#[allow(dead_code)]
 fn next<T: FromStr>(tokens: &mut SplitAsciiWhitespace) -> T {
     tokens.next().unwrap().parse().ok().unwrap()
 }
 
 #[allow(dead_code)]
-fn next_str<'a>(tokens: &mut SplitAsciiWhitespace<'a>) -> &'a str {
-    tokens.next().unwrap()
+fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
+    tokens.next().unwrap().chars().collect()
 }
 
-fn solution(tokens: &mut SplitAsciiWhitespace, out: &mut impl Write) {
+fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
-    let mut l = vec![0usize; n];
-    let mut r = vec![0usize; n];
-    let mut u = vec![0usize; n];
-    let mut v = vec![0usize; n];
-
-    for idx in 0..n {
-        l[idx] = next(tokens);
-        r[idx] = next(tokens);
-        u[idx] = next(tokens);
-        v[idx] = next(tokens);
+    let mut l: Vec<_> = vec![0i64; n];
+    let mut r: Vec<_> = vec![0i64; n];
+    let mut u: Vec<_> = vec![0i64; n];
+    let mut v: Vec<_> = vec![0i64; n];
+    for i in 0..n {
+        l[i] = next(tokens);
+        r[i] = next(tokens);
+        u[i] = next(tokens);
+        v[i] = next(tokens);
     }
 
-    // 从大到小枚举 m 最大值
-    for m in (1..=n).rev() {
-        // 当前要填的位置
-        let mut sub_idx = 1usize;
-
-        // 枚举第 i 个数字看是否能填入当前位置
+    // 枚举最大长度
+    for m in (1..=n as i64).rev() {
+        let mut j = 1i64;
+        // 从左到右枚举每一个点，尝试放入
         for i in 0..n {
-            // 填满则退出
-            if sub_idx > m {
+            let left_ok = j < l[i] || j > r[i];
+            let right_ok = (m - j + 1) < u[i] || (m - j + 1) > v[i];
+            if left_ok && right_ok {
+                j += 1;
+            }
+            if j > m {
                 break;
             }
-
-            let left_rank = sub_idx;
-            let right_rank = m - sub_idx + 1;
-
-            // 左秩 不在 [l, r] 中
-            let left_ok = left_rank < l[i] || left_rank > r[i];
-            // 右秩 不在 [u, v] 中
-            let right_ok = right_rank < u[i] || right_rank > v[i];
-
-            // 满足条件则填入
-            if left_ok && right_ok {
-                sub_idx += 1;
-            }
         }
-        // 当前答案合法，就是目标答案
-        if sub_idx > m {
-            writeln!(out, "{m}").unwrap();
+        if j > m {
+            println!("{m}");
             return;
         }
     }
-
-    writeln!(out, "0").unwrap();
+    println!("0");
 }
 
 fn main() {
     let mut input = String::new();
     io::stdin().read_to_string(&mut input).unwrap();
     let mut tokens = input.split_ascii_whitespace();
-    let mut out = io::BufWriter::new(io::stdout().lock());
 
     let t: usize = next(&mut tokens);
     for _ in 0..t {
-        solution(&mut tokens, &mut out);
+        solution(&mut tokens);
     }
-    out.flush().unwrap();
 }
