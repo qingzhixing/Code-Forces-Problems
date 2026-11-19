@@ -1,47 +1,40 @@
-use std::cmp::Reverse;
-use std::io::{self, Read, Write};
+use std::io::{self, Read};
 use std::str::{FromStr, SplitAsciiWhitespace};
 
-const _MAX_N: usize = 0;
-const _MAX_M: usize = 0;
-
+#[allow(dead_code)]
 fn next<T: FromStr>(tokens: &mut SplitAsciiWhitespace) -> T {
     tokens.next().unwrap().parse().ok().unwrap()
 }
 
 #[allow(dead_code)]
-fn next_str<'a>(tokens: &mut SplitAsciiWhitespace<'a>) -> &'a str {
-    tokens.next().unwrap()
+fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
+    tokens.next().unwrap().chars().collect()
 }
 
-fn solution(tokens: &mut SplitAsciiWhitespace, out: &mut impl Write) {
+fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
     let c: i64 = next(tokens);
-    let mut a: Vec<i64> = (0..n)
-        .map(|_| next(tokens))
-        .map(|number: i64| number - c)
-        .collect();
+    let mut a: Vec<_> = (0..n).map(|_| next::<i64>(tokens) - c).collect();
 
-    // 从大到小排序
-    a.sort_unstable_by_key(|&x| Reverse(x));
-    let a = a;
+    let k = n.div_ceil(2);
+    let not_neg_cnt = a.iter().filter(|&&x| x >= 0).count();
+    if not_neg_cnt >= k {
+        println!("{}", a.into_iter().filter(|&x| x >= 0).sum::<i64>());
+        return;
+    }
 
-    let positive_cnt = a.partition_point(|&x| x > 0);
-    let operation_cnt = positive_cnt.max(n.div_ceil(2));
-
-    let result: i64 = a.into_iter().take(operation_cnt).sum();
-    writeln!(out, "{result}").unwrap();
+    a.select_nth_unstable_by(k - 1, |x, y| y.cmp(x));
+    a.truncate(k);
+    println!("{}", a.into_iter().sum::<i64>());
 }
 
 fn main() {
     let mut input = String::new();
     io::stdin().read_to_string(&mut input).unwrap();
     let mut tokens = input.split_ascii_whitespace();
-    let mut out = io::BufWriter::new(io::stdout().lock());
 
     let t: usize = next(&mut tokens);
     for _ in 0..t {
-        solution(&mut tokens, &mut out);
+        solution(&mut tokens);
     }
-    out.flush().unwrap();
 }
