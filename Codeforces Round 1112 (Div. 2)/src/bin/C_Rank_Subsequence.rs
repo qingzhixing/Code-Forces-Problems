@@ -13,10 +13,11 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 
 fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
-    let mut l: Vec<_> = vec![0i64; n];
-    let mut r: Vec<_> = vec![0i64; n];
-    let mut u: Vec<_> = vec![0i64; n];
-    let mut v: Vec<_> = vec![0i64; n];
+    let mut l: Vec<i64> = vec![0i64; n];
+    let mut r: Vec<i64> = vec![0i64; n];
+    let mut u: Vec<i64> = vec![0i64; n];
+    let mut v: Vec<i64> = vec![0i64; n];
+
     for i in 0..n {
         l[i] = next(tokens);
         r[i] = next(tokens);
@@ -24,16 +25,19 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
         v[i] = next(tokens);
     }
 
-    // 枚举最大长度
     for m in (1..=n as i64).rev() {
+        // 当前正在放置的位置
         let mut j = 1i64;
-        // 从左到右枚举每一个点，尝试放入
         for i in 0..n {
-            let left_ok = j < l[i] || j > r[i];
-            let right_ok = (m - j + 1) < u[i] || (m - j + 1) > v[i];
-            if left_ok && right_ok {
-                j += 1;
+            let left_rank = j;
+            let right_rank = m - j + 1;
+            if left_rank >= l[i] && left_rank <= r[i] {
+                continue;
             }
+            if right_rank >= u[i] && right_rank <= v[i] {
+                continue;
+            }
+            j += 1;
             if j > m {
                 break;
             }
@@ -43,6 +47,7 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
             return;
         }
     }
+
     println!("0");
 }
 
