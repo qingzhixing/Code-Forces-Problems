@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, VecDeque};
 use std::io::{self, Read};
-use std::ops::{AddAssign, DivAssign};
+use std::ops::AddAssign;
 use std::str::{FromStr, SplitAsciiWhitespace};
 
 #[allow(dead_code)]
