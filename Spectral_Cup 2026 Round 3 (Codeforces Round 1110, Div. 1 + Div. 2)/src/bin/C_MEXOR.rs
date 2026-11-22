@@ -1,6 +1,5 @@
 use std::io::{self, Read};
 use std::str::{FromStr, SplitAsciiWhitespace};
-use std::{print, println};
 
 #[allow(dead_code)]
 fn next<T: FromStr>(tokens: &mut SplitAsciiWhitespace) -> T {
@@ -13,11 +12,7 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 }
 
 fn msb(x: usize) -> usize {
-    if x == 0 {
-        0
-    } else {
-        1 << x.ilog2()
-    }
+    if x == 0 { 0 } else { 1 << x.ilog2() }
 }
 
 fn solution(tokens: &mut SplitAsciiWhitespace) {
@@ -46,22 +41,20 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
         return;
     }
 
-    // rest > n - 1
     if msb(rest) > msb(n - 1) {
         println!("NO");
         return;
     }
 
-    let v = rest ^ (n - 1);
-
     println!("YES");
+    let v = rest ^ (n - 1);
     for i in 1..n - 1 {
         if i == v {
             continue;
         }
         print!("{i} ");
     }
-    println!("0 {} {}", v, n - 1);
+    println!("0 {v} {}", n - 1);
 }
 
 fn main() {
