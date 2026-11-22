@@ -15,19 +15,15 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 fn solution(tokens: &mut SplitAsciiWhitespace) {
     let x: usize = next(tokens);
 
-    // 给定步数求最大伤害
     let max_damage = |step: usize| -> usize {
         let mut best = 0usize;
         for atk in 1..=step {
-            // 充能次数
             let power = step - atk;
             let damage = if atk <= power + 1 {
-                // 花不完
                 atk * (2 * power + 3 - atk) / 2
             } else {
                 (power + 1) * (power + 2) / 2 + (atk - power - 1)
             };
-
             best = best.max(damage);
         }
         best
