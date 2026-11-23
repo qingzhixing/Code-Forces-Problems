@@ -1,4 +1,3 @@
-use std::collections::VecDeque;
 use std::io::{self, Read};
 use std::str::{FromStr, SplitAsciiWhitespace};
 
@@ -13,57 +12,63 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 }
 
 fn solution(tokens: &mut SplitAsciiWhitespace) {
-    compile_error!("TODO: Time Limit Error.");
     let n: usize = next(tokens);
     let p: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
 
-    // 答案下界
-    let mut result = n;
-    if n > 1 {
-        result += 1;
-    }
+    // 当前点距离左右最小点距离
+    let mut left = vec![0usize; n];
+    let mut right = vec![0usize; n];
 
-    let mut min = 1e9 as usize;
-    let mut min_idx = 0usize;
-    for (i, &x) in p.iter().enumerate() {
-        if x < min {
-            min = x;
-            min_idx = i;
-        }
-    }
-
-    let max_size = (n - 1).min((min_idx + 1).max(n - min_idx));
-
-    // 枚举区间长度
-    for len in (2..=max_size).rev() {
-        // 滑动窗口维护区间最小值
-        let mut q = VecDeque::<usize>::new();
-        let mut min = vec![0usize; n];
-        for i in 0..n {
-            // 插入当前元素
-            while !q.is_empty() && p[*q.back().unwrap()] >= p[i] {
-                q.pop_back();
-            }
-            q.push_back(i);
-
-            if i >= len - 1 {
-                // 弹出超时元素
-                while *q.front().unwrap() + len <= i {
-                    q.pop_front();
-                }
-
-                let current_min = *q.front().unwrap();
-                min[i] = current_min;
+    let mut stack = Vec::with_capacity(n);
+    // 单调栈维护前缀更小点
+    for i in 0..n {
+        while let Some(&back) = stack.last() {
+            if p[back] > p[i] {
+                stack.pop();
+            } else {
+                break;
             }
         }
+        if let Some(&back) = stack.last() {
+            left[i] = i - back;
+        } else {
+            // 没有更小点，更小点则为 0
+            left[i] = i + 1;
+        }
+        stack.push(i);
+    }
 
-        // 统计答案
-        for i in len - 1..n {
-            let left_ok = i == (len - 1) || min[i - 1] != min[i];
-            let right_ok = i == n - 1 || min[i + 1] != min[i];
-            if left_ok && right_ok {
-                result += 1;
+    stack.clear();
+
+    // 单调栈维护后缀更小点
+    for i in (0..n).rev() {
+        while let Some(&back) = stack.last() {
+            if p[back] > p[i] {
+                stack.pop();
+            } else {
+                break;
             }
+        }
+        if let Some(&back) = stack.last() {
+            right[i] = back - i;
+        } else {
+            // 没有更小点，更小点则为 n
+            right[i] = n - i;
+        }
+        stack.push(i);
+    }
+
+    // 枚举每个点
+    let mut result = 0usize;
+    for i in 0..n {
+        let left_dist = left[i];
+        let right_dist = right[i];
+
+        // 当前最小值与边界相邻
+        if left_dist == 1 || right_dist == 1 {
+            result += left_dist + right_dist - 1;
+        } else {
+            result += 2;
         }
     }
 
