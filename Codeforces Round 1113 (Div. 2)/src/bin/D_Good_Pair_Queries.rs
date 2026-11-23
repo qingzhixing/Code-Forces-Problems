@@ -17,22 +17,22 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let s = next_str(tokens);
     let t = next_str(tokens);
 
-    let mut same = vec![0i64; n + 1];
+    let mut equal = vec![0i64; n + 1];
     let mut diff = vec![0i64; n + 1];
+
     for i in 0..n {
-        same[i + 1] = same[i] + (s[i] == t[i]) as i64;
-        // 10 -> +1, 01 -> -1, 11/00 -> 0
-        diff[i + 1] = diff[i] + (s[i] as i64 - t[i] as i64);
+        // 00 11
+        equal[i + 1] = equal[i] + ((s[i] == t[i]) as i64);
+        // 10 -> +1; 01 -> -1;
+        diff[i + 1] = diff[i] + s[i] as i64 - t[i] as i64;
     }
 
     for _ in 0..q {
         let l: usize = next(tokens);
         let r: usize = next(tokens);
-
-        let same = same[r] - same[l - 1];
-        let diff = diff[r] - diff[l - 1];
-
-        if diff.abs() <= same {
+        let range_equal = equal[r] - equal[l - 1];
+        let range_diff = diff[r] - diff[l - 1];
+        if range_equal >= range_diff.abs() {
             println!("YES");
         } else {
             println!("NO");
