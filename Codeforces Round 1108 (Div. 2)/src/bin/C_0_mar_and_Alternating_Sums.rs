@@ -1,54 +1,52 @@
 use std::io::{self, Read};
-use std::println;
 use std::str::{FromStr, SplitAsciiWhitespace};
 
-const _MAX_N: usize = 2e5 as usize + 10;
-const _MAX_M: usize = 1e9 as usize;
-const MOD: i64 = 1e9 as i64 + 7;
-
+#[allow(dead_code)]
 fn next<T: FromStr>(tokens: &mut SplitAsciiWhitespace) -> T {
     tokens.next().unwrap().parse().ok().unwrap()
 }
 
 #[allow(dead_code)]
-fn next_str<'a>(tokens: &mut SplitAsciiWhitespace<'a>) -> &'a str {
-    tokens.next().unwrap()
+fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
+    tokens.next().unwrap().chars().collect()
 }
 
-fn quick_power(mut base: i64, mut power: i64, modular: i64) -> i64 {
-    let mut result = 1i64;
+const MOD: usize = 1e9 as usize + 7;
+
+fn quick_power(mut base: usize, mut power: usize) -> usize {
+    base %= MOD;
+    let mut result = 1usize;
     while power > 0 {
         if power & 1 == 1 {
-            result = result * base % modular;
+            result *= base;
+            result %= MOD;
         }
+
         power >>= 1;
-        base = base * base % modular;
+        base *= base;
+        base %= MOD;
     }
+
     result
 }
 
 fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
-    let a: Vec<i64> = (0..n).map(|_| next(tokens)).collect();
+    let mut a: Vec<i64> = (0..n).map(|_| next(tokens)).collect();
 
-    // 不同数字的个数
-    let d = 1 + a.windows(2).filter(|w| w[0] != w[1]).count();
-    // 数组中是否有 -1
-    let has_negative_one = a[0] == -1;
-    // 正整数 (v, v+1) 对数
-    let l = a
-        .windows(2)
-        .filter(|w| w[0] > 0 && w[1] == w[0] + 1)
-        .count();
+    let has_neg1 = a[0] == -1;
 
-    if !has_negative_one {
-        println!("{}", quick_power(2, (n - d) as i64, MOD));
-    } else {
-        println!(
-            "{}",
-            quick_power(2, (n - d) as i64, MOD) * ((l + 1) as i64) % MOD
-        );
+    // 有序 a 去重
+    a.dedup();
+    let d = a.len();
+
+    if !has_neg1 {
+        println!("{}", quick_power(2, n - d));
+        return;
     }
+
+    let l = a.windows(2).filter(|w| w[0] + 1 == w[1]).count();
+    println!("{}", quick_power(2, n - d) * (l + 1) % MOD);
 }
 
 fn main() {
