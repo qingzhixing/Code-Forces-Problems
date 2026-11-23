@@ -27,11 +27,8 @@ fn solution(input: &mut VecDeque<String>) {
         std::process::exit(0);
     }
 
-    let mut s = String::new();
-    s.push('+');
-    for _ in 0..(n - 1) {
-        s.push_str("--+");
-    }
+    let mut s = String::from("+");
+    s.push_str(&"--+".repeat(n as usize - 1));
 
     println!("{s}");
     io::stdout().flush().unwrap();
@@ -41,8 +38,11 @@ fn solution(input: &mut VecDeque<String>) {
         std::process::exit(0);
     }
 
-    let y = if k == 0 { 0 } else { (k + 2) / 3 };
-    println!("{}", n + y);
+    if k == 0 {
+        println!("{n}");
+    } else {
+        println!("{}", n + (k + 2) / 3);
+    }
     io::stdout().flush().unwrap();
 }
 
