@@ -1,68 +1,47 @@
+use std::collections::BTreeMap;
 use std::io::{self, Read};
-use std::println;
+use std::ops::AddAssign;
 use std::str::{FromStr, SplitAsciiWhitespace};
 
-const _MAX_N: usize = 0;
-const _MAX_M: usize = 0;
-
+#[allow(dead_code)]
 fn next<T: FromStr>(tokens: &mut SplitAsciiWhitespace) -> T {
     tokens.next().unwrap().parse().ok().unwrap()
 }
 
 #[allow(dead_code)]
-fn next_str<'a>(tokens: &mut SplitAsciiWhitespace<'a>) -> &'a str {
-    tokens.next().unwrap()
+fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
+    tokens.next().unwrap().chars().collect()
 }
 
 fn solution(tokens: &mut SplitAsciiWhitespace) {
-    let n: i64 = next(tokens);
-    let k: i64 = next(tokens);
-    let a: Vec<i64> = (0..n).map(|_| next(tokens)).collect();
+    let n: usize = next(tokens);
+    let k: usize = next(tokens);
+    let a: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
 
-    // 各个分块大小集合
-    let mut sizes = Vec::new();
-    let mut idx = 0usize;
-    while idx < n as usize {
-        let mut unequal = idx + 1;
-
-        // 移动到不相等的位置
-        while unequal < n as usize && a[idx] == a[unequal] {
-            unequal += 1;
+    let mut len_freq = BTreeMap::<usize, usize>::new();
+    let mut cnt = 1usize;
+    for i in 1..n {
+        if a[i] == a[i - 1] {
+            cnt += 1;
+        } else {
+            len_freq.entry(cnt).or_insert(0).add_assign(1);
+            cnt = 1;
         }
-
-        sizes.push((unequal - idx) as i64);
-        idx = unequal;
     }
-    sizes.sort_unstable();
+    // 结算最后一个区间
+    len_freq.entry(cnt).or_insert(0).add_assign(1);
 
-    let m = sizes.len();
-    let mut result = 0i64;
-
-    // 当前保留块数
-    let mut q = m as i64;
-    // 保留块的大小和
-    let mut sum = n;
-
-    // 从小到大枚举删除的块
-    let mut size_idx = 0usize;
-    while size_idx < m {
-        // 保留块中最小的大小
-        let s = sizes[size_idx];
-
-        // 删除 s - 1 次
-        if (k - sum) % q == 0 && k >= sum - q * (s - 1) {
+    let mut rest_num = n;
+    let mut rest_type: usize = len_freq.values().sum();
+    let mut result = 0usize;
+    for (len, cnt) in len_freq {
+        // 保留到当前 len 的最小数组长度
+        let min_len = rest_num - (len - 1) * rest_type;
+        if k >= min_len && (k - min_len) % rest_type == 0 {
             result += 1;
         }
-
-        // 删除所有 == s 的块，为下一次枚举做准备
-        let mut unequal = size_idx;
-        while unequal < m && sizes[unequal] == s {
-            unequal += 1;
-        }
-        let cnt = (unequal - size_idx) as i64;
-        q -= cnt;
-        sum -= s * cnt;
-        size_idx = unequal;
+        rest_num -= len * cnt;
+        rest_type -= cnt;
     }
 
     println!("{result}");
