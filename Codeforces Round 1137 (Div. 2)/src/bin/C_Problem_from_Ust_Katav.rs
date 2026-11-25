@@ -15,58 +15,54 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
     let p: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
 
-    // 当前点距离左右最小点距离
-    let mut left = vec![0usize; n];
-    let mut right = vec![0usize; n];
+    // 前后第一个比当前点小的点的坐标与当前点的坐标差
+    let mut left_dist = vec![0usize; n];
+    let mut right_dist = vec![0usize; n];
 
     let mut stack = Vec::with_capacity(n);
-    // 单调栈维护前缀更小点
-    for i in 0..n {
-        while let Some(&back) = stack.last() {
-            if p[back] > p[i] {
+    for (i, &x) in p.iter().enumerate() {
+        while let Some(&prev_idx) = stack.last() {
+            if p[prev_idx] > x {
                 stack.pop();
             } else {
                 break;
             }
         }
-        if let Some(&back) = stack.last() {
-            left[i] = i - back;
-        } else {
-            // 没有更小点，更小点则为 0
-            left[i] = i + 1;
-        }
+        left_dist[i] = match stack.last() {
+            Some(&prev_idx) => i - prev_idx,
+            None => i + 1,
+        };
+
         stack.push(i);
     }
+    let left_dist = left_dist;
 
     stack.clear();
 
-    // 单调栈维护后缀更小点
-    for i in (0..n).rev() {
-        while let Some(&back) = stack.last() {
-            if p[back] > p[i] {
+    for (i, &x) in p.iter().enumerate().rev() {
+        while let Some(&prev_idx) = stack.last() {
+            if p[prev_idx] > x {
                 stack.pop();
             } else {
                 break;
             }
         }
-        if let Some(&back) = stack.last() {
-            right[i] = back - i;
-        } else {
-            // 没有更小点，更小点则为 n
-            right[i] = n - i;
-        }
+        right_dist[i] = match stack.last() {
+            Some(&prev_idx) => prev_idx - i,
+            None => n - i,
+        };
+
         stack.push(i);
     }
+    let right_dist = right_dist;
 
-    // 枚举每个点
     let mut result = 0usize;
+    // 枚举每个点的左右边界情况
     for i in 0..n {
-        let left_dist = left[i];
-        let right_dist = right[i];
-
-        // 当前最小值与边界相邻
-        if left_dist == 1 || right_dist == 1 {
-            result += left_dist + right_dist - 1;
+        let left = left_dist[i];
+        let right = right_dist[i];
+        if left == 1 || right == 1 {
+            result += left + right - 1;
         } else {
             result += 2;
         }
