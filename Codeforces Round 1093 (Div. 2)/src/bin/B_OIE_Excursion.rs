@@ -15,21 +15,25 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
     let m: usize = next(tokens);
     let a: Vec<usize> = (0..n).map(|_| next(tokens)).collect();
-    let mut cnt = 0usize;
+
     let mut prev = None;
-    for num in a {
-        if Some(num) == prev {
+    let mut cnt = 0usize;
+    for x in a {
+        if Some(x) == prev {
             cnt += 1;
+        } else {
+            prev = Some(x);
             if cnt >= m {
                 println!("NO");
                 return;
             }
-        } else {
             cnt = 1;
-            prev = Some(num);
         }
     }
-
+    if cnt >= m {
+        println!("NO");
+        return;
+    }
     println!("YES");
 }
 
