@@ -21,12 +21,10 @@ fn quick_power(mut base: usize, mut power: usize) -> usize {
             result *= base;
             result %= MOD;
         }
-
         power >>= 1;
         base *= base;
         base %= MOD;
     }
-
     result
 }
 
@@ -34,12 +32,11 @@ fn solution(tokens: &mut SplitAsciiWhitespace) {
     let n: usize = next(tokens);
     let mut a: Vec<i64> = (0..n).map(|_| next(tokens)).collect();
 
-    let has_neg1 = a[0] == -1;
-
-    // 有序 a 去重
+    // 去重
     a.dedup();
-    let d = a.len();
 
+    let d = a.len();
+    let has_neg1 = a[0] == -1;
     if !has_neg1 {
         println!("{}", quick_power(2, n - d));
         return;
