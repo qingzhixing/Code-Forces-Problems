@@ -12,7 +12,7 @@ fn next_str(tokens: &mut SplitAsciiWhitespace) -> Vec<char> {
 }
 
 fn solution(tokens: &mut SplitAsciiWhitespace) {
-    let n: usize = next(tokens);
+    let _n: usize = next(tokens);
     let s = next_str(tokens);
 
     let get_cost = |ch: char| -> usize {
